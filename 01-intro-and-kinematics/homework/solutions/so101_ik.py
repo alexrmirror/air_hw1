@@ -158,14 +158,14 @@ def analytical_ik_so101_downturned(
         [formulas[k] for k in SO101_JOINT_NAMES],
         "numpy",
     )
-    q = dict(zip(SO101_JOINT_NAMES, func(x, y, z, yaw)))
+    q_values = func(x, y, z, yaw)
+    q = dict(zip(SO101_JOINT_NAMES, q_values))
 
     chain = pk.build_chain_from_urdf(open(URDF_PATH, mode="rb").read())
     serial_chain = pk.SerialChain(chain, "gripper_frame_link", "base_link")
     low, high = serial_chain.get_joint_limits()
     low, high = np.asarray(low), np.asarray(high)
-    for idx, joint in enumerate(q.keys()):
-        joint_name = joint.name
+    for idx, joint_name in enumerate(SO101_JOINT_NAMES):
         joint_angle = q[joint_name]
         if joint_angle < low[idx] or joint_angle > high[idx]:
             return None
